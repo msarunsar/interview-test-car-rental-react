@@ -28,6 +28,7 @@ interface FieldData {
 }
 
 const CustomModalCard: React.FC<Props> = (props: Props) => {
+  const [form] = Form.useForm();
   const [fields, setFields] = useState<FieldData[]>();
 
   useEffect(() => {
@@ -65,12 +66,12 @@ const CustomModalCard: React.FC<Props> = (props: Props) => {
         console.error('Error fetching data:', error)
       })
     }
-    console.log("Success:", props.car);
+    form.resetFields();
     props.onOk()
   };
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
+    form.resetFields();
     props.onCancel()
   };
 
@@ -83,6 +84,7 @@ const CustomModalCard: React.FC<Props> = (props: Props) => {
       footer={[]}
     >
       <Form
+        form={form}
         name="basic"
         layout="vertical"
         fields={fields}

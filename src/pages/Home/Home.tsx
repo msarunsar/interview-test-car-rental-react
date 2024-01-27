@@ -1,11 +1,14 @@
-import { Flex, List } from "antd";
+import { Flex, List, Modal } from "antd";
 import React, { useEffect, useState } from "react";
 import AppLayout from "../../components/Layout/AppLayout";
 import CustomBtn from "./components/CustomBtn";
 import CustomCard from "./components/CustomCard";
 import CustomModalCard from "./components/CustomModal";
 import { CarProps } from "../../interfaces/car";
-import { GetCarList } from "../../services/car";
+import { DeleteCar, GetCarList } from "../../services/car";
+import { ExclamationCircleFilled } from "@ant-design/icons";
+
+const { confirm } = Modal;
 
 const Home: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,6 +31,26 @@ const Home: React.FC = () => {
     setIsEdit(true);
   };
 
+  const showModelDelete = (value: CarProps) => {
+    confirm({
+      title: 'Do you Want to delete these items?',
+      icon: <ExclamationCircleFilled />,
+      content: 'car name: '+ value.name,
+      onOk() {
+        DeleteCar(value.id)
+          .then((res) => {
+            setData(res.data.data);
+          })
+          .catch(() => {
+            console.log("error");
+          });
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  };
+
   const handleOk = () => {
     setIsModalOpen(false);
   };
@@ -44,7 +67,7 @@ const Home: React.FC = () => {
       .catch(() => {
         console.log("error");
       });
-  }, [isModalOpen]);
+  }, [data, isModalOpen]);
 
   return (
     <>
@@ -64,6 +87,7 @@ const Home: React.FC = () => {
                   price={item.price}
                   discount={item.discount}
                   onClick={() => showModalEditCar(item)}
+                  onDelete={()=> showModelDelete(item)}
                 />
               </Flex>
             </List.Item>
